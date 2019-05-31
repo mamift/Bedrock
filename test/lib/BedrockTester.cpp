@@ -505,12 +505,12 @@ int BedrockTester::getCommitCount() {
     return getSQLiteDB().getCommitCount();
 }
 
-bool BedrockTester::waitForState(string state, uint64_t timeoutUS)
+bool BedrockTester::waitForState(string state, uint64_t timeoutUS, bool control)
 {
     uint64_t start = STimeNow();
     while (STimeNow() < start + timeoutUS) {
         try {
-            STable json = SParseJSONObject(executeWaitVerifyContent(SData("Status")));
+            STable json = SParseJSONObject(executeWaitVerifyContent(SData("Status"), "200", true));
             if (json["state"] == state) {
                 return true;
             }
