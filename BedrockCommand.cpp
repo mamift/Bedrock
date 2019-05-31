@@ -42,6 +42,7 @@ BedrockCommand::BedrockCommand(SQLiteCommand&& from, int dontCount) :
     peekedBy(nullptr),
     processedBy(nullptr),
     onlyProcessOnSyncThread(false),
+    crashIdentifyingValues(*this),
     _inProgressTiming(INVALID, 0, 0),
     _timeout(_getTimeout(request)),
     countCommand(dontCount != DONT_COUNT)
@@ -62,7 +63,7 @@ BedrockCommand::BedrockCommand(BedrockCommand&& from) :
     processedBy(from.processedBy),
     timingInfo(from.timingInfo),
     onlyProcessOnSyncThread(from.onlyProcessOnSyncThread),
-    crashIdentifyingValues(move(from.crashIdentifyingValues)),
+    crashIdentifyingValues(*this, move(from.crashIdentifyingValues)),
     _inProgressTiming(from._inProgressTiming),
     _timeout(from._timeout),
     countCommand(true)
@@ -82,6 +83,7 @@ BedrockCommand::BedrockCommand(SData&& _request) :
     peekedBy(nullptr),
     processedBy(nullptr),
     onlyProcessOnSyncThread(false),
+    crashIdentifyingValues(*this),
     _inProgressTiming(INVALID, 0, 0),
     _timeout(_getTimeout(request)),
     countCommand(true)
@@ -98,6 +100,7 @@ BedrockCommand::BedrockCommand(SData _request) :
     peekedBy(nullptr),
     processedBy(nullptr),
     onlyProcessOnSyncThread(false),
+    crashIdentifyingValues(*this),
     _inProgressTiming(INVALID, 0, 0),
     _timeout(_getTimeout(request)),
     countCommand(true)
@@ -236,7 +239,7 @@ void BedrockCommand::finalizeTimingInfo() {
         {"unaccountedTime", unaccountedTime},
     };
 
-    // We also want to know what master did if we're on a slave.
+    // We also want to know what leader did if we're on a follower.
     uint64_t upstreamPeekTime = 0;
     uint64_t upstreamProcessTime = 0;
     uint64_t upstreamUnaccountedTime = 0;
@@ -244,7 +247,7 @@ void BedrockCommand::finalizeTimingInfo() {
 
     // Now promote any existing values that were set upstream. This prepends `upstream` and makes the first existing
     // character of the name uppercase, (i.e. myValue -> upstreamMyValue), letting us keep anything that was set by the
-    // master server. We clear these values after setting the new ones, so that we can add our own values.
+    // leader server. We clear these values after setting the new ones, so that we can add our own values.
     for (const auto& p : valuePairs) {
         auto it = response.nameValueMap.find(p.first);
         if (it != response.nameValueMap.end()) {
@@ -269,7 +272,7 @@ void BedrockCommand::finalizeTimingInfo() {
     }
 
     // Log all this info.
-    SINFO("command '" << request.methodLine << "' timing info (ms): "
+    SINFO("[performance] command '" << request.methodLine << "' timing info (ms): "
           << peekTotal/1000 << " (" << peekCount << "), "
           << processTotal/1000 << " (" << processCount << "), "
           << commitWorkerTotal/1000 << ", "

@@ -66,7 +66,9 @@ BedrockClusterTester::BedrockClusterTester(BedrockClusterTester::ClusterSize siz
         string peerString = SComposeList(peerList, ",");
 
         char cwd[1024];
-        getcwd(cwd, sizeof(cwd));
+        if (!getcwd(cwd, sizeof(cwd))) {
+            STHROW("Couldn't get CWD");
+        }
 
         // Ok, build a legit map out of these.
         map <string, string> args = {
@@ -97,7 +99,7 @@ BedrockClusterTester::BedrockClusterTester(BedrockClusterTester::ClusterSize siz
     }
 
     // Ok, now we should be able to wait for the cluster to come up. Let's wait until each server responds to 'status',
-    // master first.
+    // leader first.
     vector<string> states(size);
     int count = 0;
     for (size_t i = 0; i < size; i++) {
@@ -123,7 +125,7 @@ BedrockClusterTester::BedrockClusterTester(BedrockClusterTester::ClusterSize siz
 
 BedrockClusterTester::~BedrockClusterTester()
 {
-    // Shut them down in reverse order so they don't try and stand up as master in the middle of everything.
+    // Shut them down in reverse order so they don't try and stand up as leader in the middle of everything.
     for (int i = _size - 1; i >= 0; i--) {
         stopNode(i);
     }

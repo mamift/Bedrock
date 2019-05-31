@@ -278,9 +278,9 @@ bool BedrockPlugin_Jobs::peekCommand(SQLite& db, BedrockCommand& command) {
                     STHROW("502 Select failed");
                 }
 
-                // If there's no job or the existing job doesn't match the data we've been passed, escalate to master.
+                // If there's no job or the existing job doesn't match the data we've been passed, escalate to leader.
                 if (!result.empty() && ((job["data"].empty() && result[0][1] == "{}") || (!job["data"].empty() && result[0][1] == job["data"]))) {
-                    // Return early, no need to pass to master, there are no more jobs to create.
+                    // Return early, no need to pass to leader, there are no more jobs to create.
                     SINFO("Job already existed and unique flag was passed, reusing existing job " << result[0][0] << ", mocked? "
                       << (command.request.isSet("mockRequest") ? "true" : "false"));
                     content["jobID"] = result[0][0];
@@ -428,7 +428,7 @@ bool BedrockPlugin_Jobs::processCommand(SQLite& db, BedrockCommand& command) {
         list<string> jobIDs;
         for (auto& job : jsonJobs) {
             // If unique flag was passed and the job exist in the DB, then we can finish the command without escalating to
-            // master.
+            // leader.
 
             // If this is a mock request, we insert that into the data.
             string originalData = job["data"];
@@ -1208,6 +1208,14 @@ bool BedrockPlugin_Jobs::processCommand(SQLite& db, BedrockCommand& command) {
             string updateQuery = "UPDATE jobs SET state = 'QUEUED', nextRun = DATETIME("+ SCURRENT_TIMESTAMP() + ") WHERE jobID IN(" + SQList(jobIDs)+ ");";
             if (!db.writeIdempotent(updateQuery)) {
                 STHROW("502 RequeueJobs update failed");
+            }
+
+            // If we want to update the name, let's do that
+            const string& name = request["name"];
+            if (!name.empty()) {
+                if (!db.writeIdempotent("UPDATE jobs SET name = " + SQ(name) + " WHERE jobID IN(" + SQList(jobIDs)+ ");")) {
+                    STHROW("502 Failed to update job name");
+                }
             }
         }
 
