@@ -81,7 +81,7 @@ class BedrockTester {
     bool waitForState(string state, uint64_t timeoutUS = 60'000'000, bool control = false);
 
     // Like `waitForState` but wait for any of a set of states.
-    bool waitForStates(set<string> states, uint64_t timeoutUS = 60'000'000);
+    bool waitForStates(set<string> states, uint64_t timeoutUS = 60'000'000, bool control = false);
 
     // Waits for a particular port to be free to bind to. This is useful when we've killed a server, because sometimes
     // it takes the OS a few seconds to make the port available again.

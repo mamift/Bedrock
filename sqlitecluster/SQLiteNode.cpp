@@ -550,8 +550,8 @@ bool SQLiteNode::update() {
         SASSERT(highestPriorityPeer);
         SASSERT(freshestPeer);
 
-        const string& _currentMasterName = currentMaster ? currentMaster->name : "none";
-        SDEBUG( "Dumping evaluated cluster state: numLoggedInFullPeers=" << numLoggedInFullPeers << " freshestPeer=" << freshestPeer->name << " highestPriorityPeer=" << highestPriorityPeer->name << " currentMaster=" << _currentMasterName );
+        const string& _currentLeaderName = currentLeader ? currentLeader->name : "none";
+        SDEBUG( "Dumping evaluated cluster state: numLoggedInFullPeers=" << numLoggedInFullPeers << " freshestPeer=" << freshestPeer->name << " highestPriorityPeer=" << highestPriorityPeer->name << " currentLeader=" << _currentLeaderName );
 
         // If there is already a leader that is higher priority than us,
         // subscribe -- even if we're not in sync with it.  (It'll bring
