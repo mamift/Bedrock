@@ -514,7 +514,7 @@ bool BedrockTester::waitForStates(set<string> states, uint64_t timeoutUS, bool c
     uint64_t start = STimeNow();
     while (STimeNow() < start + timeoutUS) {
         try {
-            STable json = SParseJSONObject(executeWaitVerifyContent(SData("Status"), "200", true));
+            STable json = SParseJSONObject(executeWaitVerifyContent(SData("Status"), "200", control));
             auto it = states.find(json["state"]);
             if (it != states.end()) {
                 return true;
