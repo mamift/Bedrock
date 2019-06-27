@@ -206,7 +206,6 @@ void SQLiteNode::_sendOutstandingTransactions() {
         return;
     }
     auto transactions = _db.getCommittedTransactions();
-    auto transactionCount = transactions.size();
     string sendTime = to_string(STimeNow());
     for (auto& i : transactions) {
         uint64_t id = i.first;
@@ -237,7 +236,6 @@ void SQLiteNode::_sendOutstandingTransactions() {
         _sendToAllPeers(commit, true); // subscribed only
         _lastSentTransactionID = id;
     }
-    SINFO("Sent all " << transactionCount << " outstanding transactions.");
     unsentTransactions.store(false);
 }
 

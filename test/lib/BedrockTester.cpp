@@ -501,10 +501,6 @@ int BedrockTester::getControlPort() {
     return _controlPort;
 }
 
-int BedrockTester::getCommitCount() {
-    return getSQLiteDB().getCommitCount();
-}
-
 bool BedrockTester::waitForState(string state, uint64_t timeoutUS, bool control) {
     return waitForStates({state}, timeoutUS, control);
 }
