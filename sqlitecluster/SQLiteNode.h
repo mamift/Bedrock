@@ -127,7 +127,7 @@ class SQLiteNode : public STCPNode {
     int _priority;
 
     // When the node starts, it is not ready to serve requests without first connecting to the other nodes, and checking
-    // to make sure it's up-to-date. Store the configured priority here and use "0" until we're ready to fully join the cluster.
+    // to make sure it's up-to-date. Store the configured priority here and use "-1" until we're ready to fully join the cluster.
     int _originalPriority;
 
     // Our current State.

@@ -87,6 +87,15 @@ class BedrockTester {
     // it takes the OS a few seconds to make the port available again.
     static int waitForPort(int port);
 
+    // get the output of a "Status" command from the command port
+    STable getStatus( bool control = false );
+
+    // get the value of a particular term from the output of a "Status" command
+    string getStatusTerm( string term, bool control = false );
+
+    // wait for the specified commit, up to "retries" times
+    bool waitForCommit( int minCommitCount, int retries = 30, bool control = false );
+
   protected:
     // Args passed on creation, which will be used to start the server if the `start` flag is set, or if `startServer`
     // is called later on with an empty args list.
