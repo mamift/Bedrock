@@ -555,25 +555,23 @@ int BedrockTester::waitForPort(int port) {
 
 // get the output of a "Status" command from the command port
 STable BedrockTester::getStatus( bool control ) {
-    STable json;
-
     // FYI: sometimes the status command doesn't return with every key/value expected
     SData request( "Status" );
     string response = executeWaitVerifyContent( request, "200", control );
-    json = SParseJSONObject(response);
-    return json;
+    STable responseTable = SParseJSONObject(response);
+    return responseTable;
 }
 
 // get the value of a particular term from the output of a "Status" command
 string BedrockTester::getStatusTerm( string term, bool control ) {
-    STable json;
+    STable responseTable;
 
     // FYI: sometimes the status command doesn't return with every key/value expected
     // loop until you find it
-    while (!json.count(term)) {
-        json = getStatus( control );
+    while (!responseTable.count(term)) {
+        responseTable = getStatus( control );
     }
-    return json[ term ];
+    return responseTable[ term ];
 }
 
 // wait for the specified commit
