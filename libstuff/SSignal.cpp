@@ -1,5 +1,5 @@
 #include "libstuff.h"
-#include <execinfo.h> // for backtrace
+// #include <execinfo.h> // for backtrace
 
 thread_local function<void()> SSignalHandlerDieFunc;
 void SSetSignalHandlerDieFunc(function<void()>&& func) {

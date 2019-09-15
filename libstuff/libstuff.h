@@ -4,7 +4,7 @@
 // C library
 #include <arpa/inet.h>
 #include <cxxabi.h>
-#include <execinfo.h> // for backtrace
+// #include <execinfo.h> // for backtrace
 #include <fcntl.h>
 #include <libgen.h>   // for basename()
 #include <netinet/in.h>
@@ -34,7 +34,7 @@
 #include <set>
 #include <shared_mutex>
 #include <sstream>
-#include <string>
+#include <strings.h>
 #include <thread>
 #include <vector>
 #include <functional>

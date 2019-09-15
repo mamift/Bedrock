@@ -1,5 +1,5 @@
 #include "libstuff.h"
-#include <execinfo.h> // for backtrace*
+// #include <execinfo.h> // for backtrace*
 
 // --------------------------------------------------------------------------
 // Global logging state; unsynchronized but shared between all threads

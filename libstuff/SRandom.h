@@ -1,3 +1,6 @@
+#ifndef uint
+#define uint unsigned int
+#endif 
 #pragma once
 
 // Random number generator class.
